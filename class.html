@@ -1,0 +1,13 @@
+<div class="top-bar">
+	<div class="logo-wrapper">
+		<p class="logo">liwil</p>
+	</div>
+</div>
+<div class="content-container">
+	<div class="content">
+		<input class="form-control" type="text" placeholder="Search" ng-model="class.filterName">
+		<div class="students-list">
+			<div class="student-entry" ng-repeat="student in class.students | filter: class.filterName as filtered" ng-if="filtered.length == 1" ng-click="class.detail(student.id)">{{student.first_name}} {{student.last_name}}</div>
+		</div>
+	</div>
+</div>

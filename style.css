@@ -1,0 +1,84 @@
+body {
+	background-color: #fff;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	height: 100vh; 
+}
+
+.form-login {
+	max-width: 330px;
+	margin:  0 auto;
+}
+
+.front-page {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.front-page-container {
+	display: table;
+	text-align: center;
+	width: 100%;
+	height: 100vh;
+}
+
+.front-page-title {
+	font-family: 'Lato';
+	font-weight: 100;
+	font-size: 140px;
+}
+
+.front-page-title:hover {
+	cursor: pointer;
+}
+
+.top-bar {
+	height: 150px;
+	width: 100%;
+	display: table;
+}
+
+.top-bar .logo-wrapper {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.top-bar .logo {
+	font-family: 'Lato';
+	font-weight: 100;
+	font-size: 85px;
+}
+
+.content-container {
+	
+}
+
+.content {
+	max-width: 330px;
+	margin: 0 auto;
+}
+
+.students-list {
+	margin-top: 20px;
+}
+
+.student-entry {
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	height: 40px;
+	line-height: 40px;
+	vertical-align: middle;
+	text-align: center;
+	color: #888;
+}
+
+.student-entry:hover {
+	cursor: pointer;
+}
+
+textarea {
+	width: 100%;
+	height: 200px;
+}

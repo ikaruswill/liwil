@@ -1,0 +1,303 @@
+<script src="dist/Chart.js"></script>
+<style>
+	canvas {
+	    -moz-user-select: none;
+	    -webkit-user-select: none;
+	    -ms-user-select: none;
+	}
+</style>
+
+<div class="top-bar">
+	<div class="logo-wrapper">
+		<p class="logo">liwil</p>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-2">
+		<h4>Student Profile</h4>
+		<p>{{detail.student.first_name}} {{detail.student.last_name}}</p>
+		<p>{{detail.student.gender == 1 ? 'Male' : 'Female'}}</p>
+		<p>{{detail.student.phone}}</p>
+		<p>{{detail.student.email}}</p>
+	</div>
+	<div class="col-lg-10">
+		<canvas id="canvas-1"></canvas>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-6">
+		<canvas id="canvas-2"></canvas>
+	</div>
+	<div class="col-lg-6">
+		<h4>Recommendations</h4>
+		<ul ng-repeat="learningStyle in detail.teachingMethods">
+			<li ng-repeat="recommendation in learningStyle">{{recommendation}}</li>
+		</ul>
+	</div>
+</div>
+<div class="col-lg-12">
+	<h3>Analyze</h3>
+	<form method="POST" action="http://ny-liwil.cloudapp.net/load">
+		<input id="studentId" name="studentId" type="hidden" value="{{detail.student.id}}"></input>
+		<textarea id="bodyOfText" name="bodyOfText"></textarea>
+		<button type="submit">Upload</button>
+	</form>
+</div>
+
+<script>
+	var opennessData          = [];
+	var conscientiousnessData = [];
+	var extraversionData      = [];
+	var agreeablenessData     = [];
+	var emotionalRangeData    = [];
+	var routeParams           = window.location.href.split('/');
+	var studentId             = routeParams[routeParams.length - 1];
+	
+	var randomColorFactor = function() {
+        return Math.round(Math.random() * 165);
+    };
+    var randomColor = function(opacity) {
+        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+    };
+	
+    function loadPersonalityGraph()
+    {
+		var ctx = document.getElementById("canvas-1").getContext("2d");
+		var config = {
+			type: 'line',
+			data: {
+				labels: ["January", "February", "March", "April", "May", "June", "July"],
+				datasets: [
+					{
+						label: "Openness History",
+						data: opennessData,
+						fill: false,
+						borderDash: [5, 5],
+					},
+					{
+						label: "Conscientiousness History",
+						data: conscientiousnessData,
+						fill: false,
+						borderDash: [5, 5],
+					},
+					{
+						label: "Extraversion History",
+						data: extraversionData,
+						fill: false,
+						borderDash: [5, 5],
+					},
+					{
+						label: "Agreeableness History",
+						data: agreeablenessData,
+						fill: false,
+						borderDash: [5, 5],
+					},
+					{
+						label: "Emotional Range History",
+						data: emotionalRangeData,
+						fill: false,
+						borderDash: [5, 5],
+					}
+				]
+			},
+			options: {
+				responsive: true,
+				legend: {
+					position: 'bottom',
+				},
+				hover: {
+					mode: 'label'
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+						}
+					}]
+				},
+				title: {
+					display: true,
+					text: 'Personality Tracking'
+				}
+			}
+		};
+		
+        $.each(config.data.datasets, function(i, dataset) {
+			var background = randomColor(0.7);
+			dataset.borderColor = background;
+			dataset.backgroundColor = background;
+			dataset.pointBorderColor = background;
+			dataset.pointBackgroundColor = background;
+			dataset.pointBorderWidth = 1;
+		});
+		
+    	var myLineChart = new Chart(ctx,config);
+    }
+	
+	function stringToArray(rawString)
+	{
+		stringArray = rawString.substring(1,rawString.length - 1).split(',');
+		result = [];
+		for(i=0; i<stringArray.length; i++)
+		{
+			result.push(parseFloat(stringArray[i]));
+		}
+		return result;
+	}
+	
+	function httpGetAsync(theUrl, callback)
+	{
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			{	
+				callback(stringToArray(xmlHttp.responseText));
+				loadPersonalityGraph();
+			}
+		}
+		xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+		xmlHttp.send(null);
+	}
+	
+	function setOpennessData(data)
+	{
+		opennessData = data;
+	}
+    
+    function setConscientiousnessData(data)
+	{
+		conscientiousnessData = data;
+	}
+    
+    function setExtraversionData(data)
+	{
+		extraversionData = data;
+	}
+
+    function setAgreeablenessData(data)
+	{
+		agreeablenessData = data;
+	}
+	
+    function setEmotionalRangeData(data)
+	{		
+		emotionalRangeData = data;
+    }
+    
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/personality?studentId=" + studentId + "&filter=openness", setOpennessData);
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/personality?studentId=" + studentId + "&filter=conscientiousness", setConscientiousnessData);	
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/personality?studentId=" + studentId + "&filter=extraversion", setExtraversionData);	
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/personality?studentId=" + studentId + "&filter=agreeableness", setAgreeablenessData);	
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/personality?studentId=" + studentId + "&filter=emotional_range", setEmotionalRangeData);	
+    
+</script>
+
+<script>
+	var learningStyleData = [];
+	var dominantTrait;
+ 
+    var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+
+    var loadLearningStylePie = function() {
+
+	    var configPie = {
+	        type: 'doughnut',
+	        data: {
+	            datasets: [{
+	                data: learningStyleData,
+	                backgroundColor: [
+	                    "#F7464A",
+	                    "#46BFBD",
+	                    "#FDB45C",
+	                    "#949FB1"
+	                ],
+	                label: 'Dataset 1'
+	            }],
+	            labels: [
+	                "Elaborative Processing",
+	                "Synthesis Analysis",
+	                "Methodical Study",
+	                "Fact Retention"
+	            ]
+	        },
+	        options: {
+	            responsive: true,
+	            legend: {
+	                display: false,
+	            },
+	            title: {
+	                display: true,
+	                text: dominantTrait
+	            },
+	            animation: {
+	                animateScale: true,
+	                animateRotate: true
+	            }
+	        }
+	    };
+
+	    $.each(configPie.data.datasets.data, function(i, dataset) {
+			var background = randomColor(0.7);
+			dataset.borderColor = background;
+			dataset.backgroundColor = background;
+			dataset.pointBorderColor = background;
+			dataset.pointBackgroundColor = background;
+			dataset.pointBorderWidth = 1;
+		});
+
+	    var ctxPie = document.getElementById("canvas-2").getContext("2d");
+		var myDoughnut = new Chart(ctxPie, configPie);
+
+	}
+
+	function httpGetAsync(theUrl, callback)
+	{
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			{	
+				dominantTrait = xmlHttp.responseText;
+				dominantTrait = dominantTrait.charAt(0).toUpperCase() + dominantTrait.slice(1);
+				callback(xmlHttp.responseText);
+				loadLearningStylePie();
+			}
+		}
+		xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+		xmlHttp.send(null);
+	}
+
+	function setLearningStyleData(dominantTrait) {
+		switch(dominantTrait) {
+			case 'extraversion':
+				learningStyleData = [0.37, 0.27, 0.03, 0.33];
+				break;
+			case 'openness':
+				learningStyleData = [0.45, 0.44, 0.07, 0.04];
+				break;
+			case 'agreeableness':
+				learningStyleData = [0.24, 0.29, 0.20, 0.27];
+				break;
+			case 'conscientiousness':
+				learningStyleData = [0.17, 0.23, 0.40, 0.20];
+				break;
+			default:
+				learningStyleData = [0, 0, 0, 0];
+				break;
+		}
+	}
+
+	httpGetAsync("http://ny-liwil.cloudapp.net/ind/dominant?studentId=" + studentId, setLearningStyleData)
+
+</script>
+
