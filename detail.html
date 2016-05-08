@@ -30,8 +30,13 @@
 	</div>
 	<div class="col-lg-6">
 		<h4>Recommendations</h4>
-		<ul ng-repeat="learningStyle in detail.teachingMethods">
-			<li ng-repeat="recommendation in learningStyle">{{recommendation}}</li>
+		<h5>{{detail.learningStyles[0].name}}</h5>
+		<ul>
+			<li ng-repeat="teachingMethod in detail.teachingMethods[0]['elaborative processing']">{{teachingMethod.name}}</li>
+		</ul>
+		<h5>{{detail.learningStyles[1].name}}</h5>
+		<ul>
+			<li ng-repeat="teachingMethod in detail.teachingMethods[1]['synthesis analysis']">{{teachingMethod.name}}</li>
 		</ul>
 	</div>
 </div>

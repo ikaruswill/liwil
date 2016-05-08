@@ -134,7 +134,7 @@ mod.service('util', ['$http', '$window', function($http, $window){
 			data = object.data;
 			console.log('GETRECCOMENDATIONS OK2');
 			console.log(object);
-			return data.data;
+			return data;
 		}, function(object){
 			console.log('GETRECCOMENDATIONS ERROR2');
 			return null;
@@ -213,7 +213,10 @@ mod.controller('detailController', ['$location', '$routeParams', 'util', functio
 	util.getDominant(vm.id).then(function(trait){
 		console.log(trait);
 		util.getRecommendations(trait).then(function(data){
+			console.log(data);
+			vm.learningStyles = data['learning styles'];
 			vm.teachingMethods = data['teaching methods'];
+			console.log(vm.teachingMethods);
 		}, function(data){
 			console.log('FAIL');
 		});
